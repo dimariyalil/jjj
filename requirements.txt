@@ -1,3 +1,4 @@
+python-dotenv
 telethon
 gspread
 oauth2client
