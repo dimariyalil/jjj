@@ -1,4 +1,3 @@
-
 from telegram_parser import parse_telegram_channels
 from google_sheets import save_to_sheet
 
