@@ -1,27 +1,19 @@
-from telegram_parser import parse_telegram_channels
+from telegram_parser import search_telegram_channels
 from google_sheets import save_to_sheet
 
 def main():
-    print("🚀 Стартуем! Парсим Telegram каналы...")
-    posts = parse_telegram_channels()
-    print(f"📬 Найдено постов: {len(posts)}")
+    print("🚀 Стартуем! Ищем Telegram каналы...")
+    channels_with_keywords_in_name, channels_with_keywords_in_description = search_telegram_channels()
+    
+    print(f"📬 Найдено каналов с ключевыми словами в названии: {len(channels_with_keywords_in_name)}")
+    print(f"📬 Найдено каналов с ключевыми словами в описании: {len(channels_with_keywords_in_description)}")
 
-    for post in posts:
-        if not post:
-            print("⚠️ Пропущен пустой пост (None).")
-            continue
-        try:
-            print(f"- {post['channel']} | {post['text'][:40]}...")
-        except Exception as e:
-            print(f"❌ Ошибка при выводе поста: {e}")
-
-    valid_posts = [p for p in posts if p]
-    if valid_posts:
+    if channels_with_keywords_in_name or channels_with_keywords_in_description:
         print("📤 Отправляем данные в Google Sheets...")
-        save_to_sheet(valid_posts)
+        save_to_sheet(channels_with_keywords_in_name, channels_with_keywords_in_description)
         print("✅ Успешно сохранено!")
     else:
-        print("⚠️ Нет валидных постов для сохранения.")
+        print("⚠️ Нет подходящих каналов для сохранения.")
 
 if __name__ == "__main__":
     main()
