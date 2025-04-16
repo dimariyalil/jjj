@@ -1,13 +1,4 @@
-import os
-import json
-import gspread
-import base64
-import tempfile
-from datetime import datetime
-from oauth2client.service_account import ServiceAccountCredentials
-from gspread.exceptions import APIError
-
-def save_to_sheet(posts):
+def save_to_sheet(channels_with_keywords_in_name, channels_with_keywords_in_description):
     print("📄 Подключаемся к Google Sheets...")
 
     scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
@@ -33,19 +24,26 @@ def save_to_sheet(posts):
 
             sheet = client.open_by_key(sheet_id).worksheet(sheet_name)
 
-            for post in posts:
-                try:
-                    sheet.append_row([
-                        post['channel'],
-                        post['text'],
-                        post['url'],
-                        post['date'],
-                        post['source'],
-                        post['positive']
-                    ])
-                    print(f"✅ Добавлена строка из канала: {post['channel']}")
-                except Exception as e:
-                    print(f"⚠️ Не удалось записать строку: {e}")
-        except APIError as e:
-            print(f"❌ Ошибка Google Sheets: {e}")
-            raise
+            # Сохраняем каналы с ключевыми словами в названии
+            sheet.append_row(["Каналы с ключевыми словами в названии"])
+            for channel in channels_with_keywords_in_name:
+                sheet.append_row([
+                    channel["channel"],
+                    channel["title"],
+                    channel["description"],
+                    channel["subscribers"]
+                ])
+
+            # Сохраняем каналы с ключевыми словами в описании
+            sheet.append_row(["Каналы с ключевыми словами в описании"])
+            for channel in channels_with_keywords_in_description:
+                sheet.append_row([
+                    channel["channel"],
+                    channel["title"],
+                    channel["description"],
+                    channel["subscribers"]
+                ])
+
+    except APIError as e:
+        print(f"❌ Ошибка Google Sheets: {e}")
+        raise
